@@ -122,7 +122,8 @@ tr:hover td{background:#FDFCFF}
 .tag-gold{background:#FEF3C7;color:#92400E}
 .tag-macro{background:#FCE7F3;color:#9D174D}
 .tag-intl{background:#D1FAE5;color:#065F46}
-.news-title{font-size:.88rem;font-weight:700;color:var(--navy);line-height:1.4}
+.news-title{font-size:.96rem;font-weight:700;color:var(--navy);line-height:1.4}
+.news-summary{font-size:.71rem;color:var(--muted);line-height:1.55}
 .news-source{font-size:.72rem;color:var(--muted);font-style:italic}
 .news-link{font-size:.75rem;color:var(--coral);font-weight:700;text-decoration:none}
 .news-link:hover{text-decoration:underline}
@@ -151,7 +152,7 @@ tr:hover td{background:#FDFCFF}
 /* Modal — draggable */
 .modal-overlay{position:fixed;inset:0;background:rgba(30,10,60,.4);backdrop-filter:blur(4px);z-index:500;display:none;align-items:flex-start;justify-content:center;padding:40px 20px;pointer-events:none}
 .modal-overlay.open{display:flex;pointer-events:all}
-.modal{background:var(--card);border-radius:var(--radius);padding:28px;max-width:640px;width:100%;box-shadow:var(--shadow-lg);position:absolute;max-height:88vh;overflow-y:auto;cursor:default;top:60px;left:50%;transform:translateX(-50%)}
+.modal{background:var(--card);border-radius:var(--radius);padding:28px;max-width:640px;width:calc(100% - 40px);box-shadow:var(--shadow-lg);position:fixed;max-height:88vh;overflow-y:auto;cursor:default;top:60px;z-index:501;left:50%;transform:translateX(-50%)}
 .modal-drag-handle{position:absolute;top:0;left:0;right:0;height:38px;cursor:grab;border-radius:var(--radius) var(--radius) 0 0;background:linear-gradient(135deg,rgba(192,132,252,.08),rgba(244,114,182,.06))}
 .modal-drag-handle:active{cursor:grabbing}
 .modal-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.3rem;color:var(--navy);margin-bottom:16px;margin-top:4px}
@@ -363,37 +364,79 @@ tr:hover td{background:#FDFCFF}
 <!-- ══ FUNDS ══ -->
 <div class="page" id="page-funds">
   <div class="section-title">基金管理</div>
-  <div class="asset-tabs" id="fundTabs">
-    <div class="asset-tab active" onclick="switchAssetTab(this,'fund-dca','fundTabs')">定期定額</div>
-    <div class="asset-tab" onclick="switchAssetTab(this,'fund-lump','fundTabs')">單筆月配息</div>
-    <div class="asset-tab" onclick="switchAssetTab(this,'fund-ins','fundTabs')">投資型保單</div>
-  </div>
-  <div id="fund-dca">
-    <div style="display:flex;gap:10px;margin-bottom:18px"><button class="btn btn-primary" onclick="openModal('addDCAModal')">＋ 新增定期定額</button></div>
-    <div class="card"><div class="chart-label" style="margin-bottom:12px">定期定額持倉</div>
-      <div class="table-wrap"><table id="dcaTable">
-        <thead><tr><th>基金名稱</th><th>代號</th><th>扣款日</th><th>每月金額</th><th>單位數</th><th>成本/單位</th><th>現值/單位</th><th>總市值</th><th>損益</th><th>報酬率</th><th>起訖</th><th>操作</th></tr></thead>
-        <tbody id="dcaBody"><tr><td colspan="12" style="text-align:center;color:var(--muted);padding:28px">尚無資料</td></tr></tbody>
-      </table></div>
+  <div class="section-sub">所有基金一覽，點擊各區塊右上角的 ＋ 新增</div>
+
+  <!-- 定期定額 -->
+  <div class="card" style="margin-bottom:18px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="background:#EDE9FE;color:#6D28D9;padding:3px 10px;border-radius:50px;font-size:.75rem;font-weight:700">📅 定期定額</span>
+        <div class="chart-label">定期定額基金</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openModal('addDCAModal')">＋ 新增</button>
     </div>
+    <div class="table-wrap"><table id="dcaTable">
+      <thead><tr>
+        <th onclick="sortTable('dcaTable',0)">名稱 <span class="sort-icon">⇅</span></th>
+        <th>代號</th>
+        <th onclick="sortTable('dcaTable',2)">扣款日 <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable('dcaTable',3)">每月金額 <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable('dcaTable',4)">單位數 <span class="sort-icon">⇅</span></th>
+        <th>成本/單位</th><th>現值/單位</th>
+        <th onclick="sortTable('dcaTable',7)">總市值 <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable('dcaTable',8)">損益 <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable('dcaTable',9)">報酬率 <span class="sort-icon">⇅</span></th>
+        <th>起訖</th><th>操作</th>
+      </tr></thead>
+      <tbody id="dcaBody"><tr><td colspan="12" style="text-align:center;color:var(--muted);padding:22px">尚無資料</td></tr></tbody>
+    </table></div>
   </div>
-  <div id="fund-lump" style="display:none">
-    <div style="display:flex;gap:10px;margin-bottom:18px"><button class="btn btn-primary" onclick="openModal('addLumpModal')">＋ 新增單筆月配</button></div>
-    <div class="card"><div class="chart-label" style="margin-bottom:12px">單筆月配息基金</div>
-      <div class="table-wrap"><table id="lumpTable">
-        <thead><tr><th>基金名稱</th><th>幣別</th><th>成本(NTD)</th><th>買入匯率</th><th>淨值/單位(USD)</th><th>單位數</th><th>月配息/單位</th><th>本月(USD)</th><th>本月(NTD)</th><th>現匯率</th><th>操作</th></tr></thead>
-        <tbody id="lumpBody"><tr><td colspan="11" style="text-align:center;color:var(--muted);padding:28px">尚無資料</td></tr></tbody>
-      </table></div>
+
+  <!-- 單筆月配息 -->
+  <div class="card" style="margin-bottom:18px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="background:#DBEAFE;color:#1E40AF;padding:3px 10px;border-radius:50px;font-size:.75rem;font-weight:700">💵 單筆月配</span>
+        <div class="chart-label">單筆月配息基金</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openModal('addLumpModal')">＋ 新增</button>
     </div>
+    <div class="table-wrap"><table id="lumpTable">
+      <thead><tr>
+        <th>名稱</th><th>幣別</th>
+        <th onclick="sortTable('lumpTable',2)">成本(NTD) <span class="sort-icon">⇅</span></th>
+        <th>買入匯率</th><th>淨值/單位</th>
+        <th onclick="sortTable('lumpTable',5)">單位數 <span class="sort-icon">⇅</span></th>
+        <th>月配/單位</th>
+        <th onclick="sortTable('lumpTable',7)">本月(USD) <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable('lumpTable',8)">本月(NTD) <span class="sort-icon">⇅</span></th>
+        <th>現匯率</th><th>操作</th>
+      </tr></thead>
+      <tbody id="lumpBody"><tr><td colspan="11" style="text-align:center;color:var(--muted);padding:22px">尚無資料</td></tr></tbody>
+    </table></div>
   </div>
-  <div id="fund-ins" style="display:none">
-    <div style="display:flex;gap:10px;margin-bottom:18px"><button class="btn btn-primary" onclick="openModal('addInsFundModal')">＋ 新增投資型保單標的</button></div>
-    <div class="card"><div class="chart-label" style="margin-bottom:12px">投資型保單連結標的</div>
-      <div class="table-wrap"><table id="insFundTable">
-        <thead><tr><th>保單名稱</th><th>連結標的</th><th>投入保費(NTD)</th><th>單位數</th><th>現值淨值/單位</th><th>目前市值</th><th>損益</th><th>報酬率</th><th>操作</th></tr></thead>
-        <tbody id="insFundBody"><tr><td colspan="9" style="text-align:center;color:var(--muted);padding:28px">尚無資料</td></tr></tbody>
-      </table></div>
+
+  <!-- 投資型保單連結標的 -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="background:#FCE7F3;color:#9D174D;padding:3px 10px;border-radius:50px;font-size:.75rem;font-weight:700">🔗 投資型連結</span>
+        <div class="chart-label">投資型保單連結標的</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openModal('addInsFundModal')">＋ 新增</button>
     </div>
+    <div class="table-wrap"><table id="insFundTable">
+      <thead><tr>
+        <th>保單名稱</th><th>連結標的</th>
+        <th onclick="sortTable('insFundTable',2)">投入保費(NTD) <span class="sort-icon">⇅</span></th>
+        <th>單位數</th><th>現值/單位</th>
+        <th onclick="sortTable('insFundTable',5)">目前市值 <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable('insFundTable',6)">損益 <span class="sort-icon">⇅</span></th>
+        <th onclick="sortTable('insFundTable',7)">報酬率 <span class="sort-icon">⇅</span></th>
+        <th>操作</th>
+      </tr></thead>
+      <tbody id="insFundBody"><tr><td colspan="9" style="text-align:center;color:var(--muted);padding:22px">尚無資料</td></tr></tbody>
+    </table></div>
   </div>
 </div>
 
@@ -775,7 +818,6 @@ tr:hover td{background:#FDFCFF}
 <div class="modal-overlay" id="addGoldModal">
   <div class="modal" id="addGoldModal-box">
     <div class="modal-drag" id="addGoldModal-h"></div>
-    <div class="modal-drag-handle" id="addGoldModal-handle"></div>
     <button class="modal-close" onclick="closeModal('addGoldModal')">✕</button>
     <div class="modal-title" id="goldModalTitle">新增黃金存摺交易</div>
     <div class="form-grid">
@@ -810,7 +852,8 @@ tr:hover td{background:#FDFCFF}
 
 <!-- Add generic -->
 <div class="modal-overlay" id="addModal">
-  <div class="modal" id="addModal-box" style="max-width:480px">
+  <div class="modal" id="addModal-box" data-drag="true" style="max-width:480px">
+    <div class="modal-drag" id="addModal-h"></div>
     <div class="modal-drag-handle" id="addModal-handle"></div>
     <button class="modal-close" onclick="closeModal('addModal')">✕</button>
     <div class="modal-title">新增交易</div>
@@ -1034,10 +1077,48 @@ function makeDraggable(id){
   const box=document.getElementById(id+'-box');
   const handle=document.getElementById(id+'-h')||document.getElementById(id+'-handle');
   if(!box||!handle)return;
-  let drag=false,ox=0,oy=0,sx=0,sy=0;
-  handle.addEventListener('mousedown',e=>{drag=true;const r=box.getBoundingClientRect();ox=r.left;oy=r.top;sx=e.clientX;sy=e.clientY;box.style.transition='none';document.body.style.userSelect='none';});
-  document.addEventListener('mousemove',e=>{if(!drag)return;box.style.left=(ox+e.clientX-sx)+'px';box.style.top=(oy+e.clientY-sy)+'px';box.style.transform='none';});
-  document.addEventListener('mouseup',()=>{drag=false;document.body.style.userSelect='';});
+  let drag=false,startX=0,startY=0,origLeft=0,origTop=0;
+  handle.addEventListener('mousedown',e=>{
+    e.preventDefault();
+    drag=true;
+    // Get current position (works for both initial CSS and after dragging)
+    const r=box.getBoundingClientRect();
+    origLeft=r.left; origTop=r.top;
+    startX=e.clientX; startY=e.clientY;
+    box.style.left=origLeft+'px';
+    box.style.top=origTop+'px';
+    box.style.transform='none';
+    box.style.margin='0';
+    box.style.transition='none';
+    document.body.style.userSelect='none';
+    document.body.style.cursor='grabbing';
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!drag)return;
+    const dx=e.clientX-startX, dy=e.clientY-startY;
+    box.style.left=(origLeft+dx)+'px';
+    box.style.top=Math.max(0,origTop+dy)+'px';
+  });
+  document.addEventListener('mouseup',()=>{
+    if(!drag)return;
+    drag=false;
+    document.body.style.userSelect='';
+    document.body.style.cursor='';
+  });
+  // Touch support
+  handle.addEventListener('touchstart',e=>{
+    const t=e.touches[0];
+    const r=box.getBoundingClientRect();
+    origLeft=r.left;origTop=r.top;startX=t.clientX;startY=t.clientY;
+    box.style.left=origLeft+'px';box.style.top=origTop+'px';
+    box.style.transform='none';box.style.margin='0';
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!handle.matches(':active'))return;
+    const t=e.touches[0];
+    box.style.left=(origLeft+t.clientX-startX)+'px';
+    box.style.top=Math.max(0,origTop+t.clientY-startY)+'px';
+  },{passive:true});
 }
 
 // ── Autocomplete ────────────────────────────────────────────────────────────
@@ -1104,36 +1185,61 @@ document.addEventListener('click',e=>{if(!e.target.closest('.autocomplete-wrap')
 const priceCache={};
 async function fetchPrice(sym){
   if(!sym)return null;
-  // Check manual override first
   if(DB.manualPrices&&DB.manualPrices[sym]!==undefined)return DB.manualPrices[sym];
-  // Smart cache: respect market hours
   const c=priceCache[sym];
   const cacheAge=c?Date.now()-c.ts:Infinity;
-  const maxAge=isMarketOpen()?60*60*1000:24*60*60*1000; // 1hr open, 24hr closed
+  const maxAge=isMarketOpen()?60*60*1000:24*60*60*1000;
   if(c&&cacheAge<maxAge)return c.price;
-  try{
-    const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=5d`;
-    const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,{signal:AbortSignal.timeout(8000)});
-    const d=await r.json();const parsed=JSON.parse(d.contents);
-    const res=parsed.chart?.result?.[0];if(!res)return c?.price||null;
-    const meta=res.meta||{};
-    const closes=res.indicators?.quote?.[0]?.close||[];
-    // Smart price selection:
-    // - If market open: use regularMarketPrice
-    // - If pre-market/after-hours: use previous close
-    // - If market closed: use last available close
-    let price=null;
-    if(meta.regularMarketPrice&&meta.regularMarketPrice>0){
-      price=meta.regularMarketPrice;
-    }else{
-      // Find last non-null close
-      for(let i=closes.length-1;i>=0;i--){if(closes[i]!==null&&closes[i]>0){price=closes[i];break;}}
-    }
-    if(!price)price=meta.previousClose||meta.chartPreviousClose||null;
-    if(price&&price>0){priceCache[sym]={price,ts:Date.now()};return price;}
-    return c?.price||null;
-  }catch(e){return c?.price||null;}
+
+  // Try multiple approaches in order
+  const price = await _fetchYahooDirect(sym) ||
+                await _fetchYahooProxy(sym,'https://api.allorigins.win/get?url=') ||
+                await _fetchYahooProxy(sym,'https://corsproxy.io/?') ||
+                await _fetchYahooProxy(sym,'https://api.codetabs.com/v1/proxy?quest=') ||
+                c?.price || null;
+
+  if(price&&price>0){priceCache[sym]={price,ts:Date.now()};return price;}
+  return null;
 }
+
+async function _fetchYahooDirect(sym){
+  // Try Yahoo Finance query2 endpoint (sometimes allows direct CORS)
+  try{
+    const url=`https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=5d&corsDomain=finance.yahoo.com`;
+    const r=await fetch(url,{signal:AbortSignal.timeout(4000),headers:{'Accept':'application/json'}});
+    if(!r.ok)return null;
+    const d=await r.json();
+    return _extractPrice(d);
+  }catch(e){return null;}
+}
+
+async function _fetchYahooProxy(sym,proxyBase){
+  try{
+    const yahooUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=5d`;
+    const proxyUrl = proxyBase.includes('allorigins') || proxyBase.includes('codetabs')
+      ? proxyBase + encodeURIComponent(yahooUrl)
+      : proxyBase + encodeURIComponent(yahooUrl);
+    const r=await fetch(proxyUrl,{signal:AbortSignal.timeout(6000)});
+    if(!r.ok)return null;
+    const text=await r.text();
+    let data;
+    try{const j=JSON.parse(text);data=j.contents?JSON.parse(j.contents):j;}catch(e){return null;}
+    return _extractPrice(data);
+  }catch(e){return null;}
+}
+
+function _extractPrice(data){
+  try{
+    const res=data?.chart?.result?.[0];if(!res)return null;
+    const meta=res.meta||{};
+    const closes=(res.indicators?.quote?.[0]?.close||[]).filter(v=>v&&v>0);
+    let price=meta.regularMarketPrice||meta.previousClose||meta.chartPreviousClose||null;
+    if(!price&&closes.length)price=closes[closes.length-1];
+    return(price&&price>0)?price:null;
+  }catch(e){return null;}
+}
+
+
 async function fetchExchangeRate(){
   const p=await fetchPrice('TWD=X');
   if(p){DB.usdTwd=p;save();toast('匯率更新：USD/TWD = '+p.toFixed(2));}
@@ -1146,15 +1252,25 @@ function saveManualRate(){const v=+document.getElementById('manualUsdTwd').value
 let goldSpotNTD=0;
 let goldPriceTs=0;
 async function fetchBOTGoldPrice(){
-  // Use cached price if < 1 hour old
   if(goldSpotNTD>0&&Date.now()-goldPriceTs<60*60*1000)return goldSpotNTD;
   try{
-    // Taiwan Bank gold price public JSON
     const url='https://rate.bot.com.tw/gold/json';
-    const proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const r=await fetch(proxy,{signal:AbortSignal.timeout(6000)});
-    const d=await r.json();
-    const parsed=JSON.parse(d.contents);
+    let parsed=null;
+    for(const proxyFn of [
+      u=>`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+      u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
+      u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+    ]){
+      try{
+        const r=await fetch(proxyFn(url),{signal:AbortSignal.timeout(5000)});
+        const text=await r.text();
+        let content=text;
+        try{const j=JSON.parse(text);if(j.contents)content=j.contents;}catch(e){}
+        parsed=JSON.parse(content);
+        if(parsed)break;
+      }catch(e){continue;}
+    }
+    if(!parsed)throw new Error('All proxies failed');
     // parsed is array of gold prices; find 黃金存摺 客戶賣出
     // Structure: [{CurrencyName, SellPrice, BuyPrice, ...}]
     // BOT gold passbook: look for 黃金存摺 (passbook gold)
@@ -1213,22 +1329,31 @@ function isMarketOpen(){
 }
 async function updateTicker(force=false){
   const now=Date.now();
-  const interval=isMarketOpen()?60*60*1000:24*60*60*1000; // open:1hr, closed:24hr
+  const interval=isMarketOpen()?60*60*1000:24*60*60*1000;
   if(!force&&now-tickerLastFetch<interval)return;
   tickerLastFetch=now;
-  for(const cfg of TICKER_CFG){
-    const p=await fetchPrice(cfg.sym);
+  // Fetch all in parallel for speed
+  const results=await Promise.allSettled(TICKER_CFG.map(cfg=>fetchPrice(cfg.sym)));
+  results.forEach((result,i)=>{
+    const cfg=TICKER_CFG[i];
     const el=document.getElementById(cfg.id);
-    if(p&&el){
+    if(!el)return;
+    if(result.status==='fulfilled'&&result.value&&result.value>0){
+      const p=result.value;
       const prev=priceCache[cfg.sym]?.prevP;
       const dir=prev?Math.sign(p-prev):0;
       el.textContent=`● ${cfg.label} ${fmt(p,cfg.dec)}`;
       el.className='ticker-item '+(dir>0?'t-up':dir<0?'t-dn':'t-flat');
-      if(!priceCache[cfg.sym])priceCache[cfg.sym]={price:p,ts:now};
-      priceCache[cfg.sym].prevP=p;
+      priceCache[cfg.sym]=priceCache[cfg.sym]||{};
+      priceCache[cfg.sym].price=p;priceCache[cfg.sym].ts=now;priceCache[cfg.sym].prevP=p;
       if(cfg.sym==='TWD=X'){DB.usdTwd=p;save();}
+    }else{
+      // Keep last known value or show N/A
+      const last=priceCache[cfg.sym]?.price;
+      el.textContent=last?`● ${cfg.label} ${fmt(last,cfg.dec)} *`:`● ${cfg.label} N/A`;
+      el.className='ticker-item t-flat';
     }
-  }
+  });
 }
 function buildTicker(){
   const track=document.getElementById('tickerTrack');
@@ -1808,6 +1933,7 @@ const PAYWALL_NAMES=['Bloomberg','WSJ','Wall Street Journal','The Economist','Fi
 
 const RSS_PROXIES=[
   url=>`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  url=>`https://corsproxy.io/?${encodeURIComponent(url)}`,
   url=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
 ];
 async function fetchRSS(url,maxItems=8){
