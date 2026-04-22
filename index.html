@@ -23,7 +23,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 /* Header */
 .site-header{position:sticky;top:0;z-index:100;background:rgba(248,246,255,0.92);backdrop-filter:blur(20px);border-bottom:1.5px solid var(--border);padding:0 28px}
 .header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:16px;height:64px}
-.logo{font-family:'DM Serif Display',serif;font-size:1.45rem;color:var(--navy);white-space:nowrap}
+.logo{font-family:'Nunito',sans-serif;font-weight:900;letter-spacing:-.02em;font-size:1.45rem;color:var(--navy);white-space:nowrap}
 .logo span{color:var(--coral)}
 .header-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .sync-pill{display:flex;align-items:center;gap:7px;background:var(--card);border:1.5px solid var(--border);border-radius:50px;padding:5px 14px;font-size:.75rem;font-weight:600;color:var(--muted)}
@@ -48,7 +48,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 /* Main */
 main{max-width:1400px;margin:0 auto;padding:28px}
 .page{display:none}.page.active{display:block}
-.section-title{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--navy);margin-bottom:4px}
+.section-title{font-family:'Nunito',sans-serif;font-weight:900;letter-spacing:-.01em;font-size:1.5rem;color:var(--navy);margin-bottom:4px}
 .section-sub{font-size:.85rem;color:var(--muted);margin-bottom:20px}
 
 /* Cards */
@@ -154,7 +154,7 @@ tr:hover td{background:#FDFCFF}
 .modal{background:var(--card);border-radius:var(--radius);padding:28px;max-width:640px;width:100%;box-shadow:var(--shadow-lg);position:absolute;max-height:88vh;overflow-y:auto;cursor:default;top:60px;left:50%;transform:translateX(-50%)}
 .modal-drag-handle{position:absolute;top:0;left:0;right:0;height:38px;cursor:grab;border-radius:var(--radius) var(--radius) 0 0;background:linear-gradient(135deg,rgba(192,132,252,.08),rgba(244,114,182,.06))}
 .modal-drag-handle:active{cursor:grabbing}
-.modal-title{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--navy);margin-bottom:16px;margin-top:4px}
+.modal-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.3rem;color:var(--navy);margin-bottom:16px;margin-top:4px}
 .modal-drag{position:absolute;top:0;left:0;right:0;height:36px;cursor:grab;border-radius:var(--radius) var(--radius) 0 0;background:linear-gradient(135deg,rgba(192,132,252,.07),rgba(244,114,182,.05))}
 .modal-drag::after{content:"· · ·";position:absolute;top:10px;left:50%;transform:translateX(-50%);color:var(--border);font-size:1rem;letter-spacing:4px}
 .modal-drag:active{cursor:grabbing}
@@ -256,7 +256,7 @@ tr:hover td{background:#FDFCFF}
     <button class="nav-tab" data-page="insurance" onclick="switchPage('insurance',this)"><span>🛡️</span>保單</button>
     <button class="nav-tab" data-page="transactions" onclick="switchPage('transactions',this)"><span>📋</span>交易明細</button>
     <button class="nav-tab" data-page="alerts" onclick="switchPage('alerts',this)"><span>🔔</span>到價提醒</button>
-    <button class="nav-tab" data-page="news" onclick="switchPage('news',this)"><span>📰</span>新聞</button>
+    <button class="nav-tab" data-page="news" onclick="switchPage('news',this);if(!allNewsItems.length)tryLoadCache()"><span>📰</span>新聞</button>
     <button class="nav-tab" data-page="settings" onclick="switchPage('settings',this)"><span>⚙️</span>設定</button>
   </div>
 </nav>
@@ -441,62 +441,82 @@ tr:hover td{background:#FDFCFF}
 <!-- ══ INSURANCE ══ -->
 <div class="page" id="page-insurance">
   <div class="section-title">保單管理</div>
-  <div class="asset-tabs" id="insTabs">
-    <div class="asset-tab active" onclick="switchAssetTab(this,'ins-twd','insTabs')">台幣儲蓄</div>
-    <div class="asset-tab" onclick="switchAssetTab(this,'ins-usd','insTabs')">美元儲蓄</div>
-    <div class="asset-tab" onclick="switchAssetTab(this,'ins-inv-dca','insTabs')">投資型-定期定額</div>
-    <div class="asset-tab" onclick="switchAssetTab(this,'ins-inv-lump','insTabs')">投資型-單筆月配</div>
-  </div>
+  <div class="section-sub">所有保單一覽，點擊各區塊右上角的 ＋ 新增</div>
+
   <!-- 台幣儲蓄 -->
-  <div id="ins-twd">
-    <div style="display:flex;gap:10px;margin-bottom:16px">
-      <button class="btn btn-primary" onclick="openInsModal('twd')">＋ 新增台幣儲蓄保單</button>
+  <div class="card" style="margin-bottom:18px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="background:#D1FAE5;color:#065F46;padding:3px 10px;border-radius:50px;font-size:.75rem;font-weight:700">💰 台幣儲蓄</span>
+        <div class="chart-label">台幣儲蓄保單</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openInsModal('twd')">＋ 新增</button>
     </div>
-    <div class="card"><div class="chart-label" style="margin-bottom:10px">台幣儲蓄保單</div>
-      <div class="table-wrap"><table id="twdInsTable">
-        <thead><tr><th>保單名稱</th><th>每期保費(NTD)</th><th>繳費方式</th><th>繳費年期</th><th>起保日</th><th>已繳期數</th><th>累計繳費(NTD)</th><th>帳戶價值(NTD) ▼</th><th>損益</th><th>報酬率</th><th>操作</th></tr></thead>
-        <tbody id="twdInsBody"><tr><td colspan="11" style="text-align:center;color:var(--muted);padding:28px">尚無資料</td></tr></tbody>
-      </table></div>
-    </div>
+    <div class="table-wrap"><table id="twdInsTable">
+      <thead><tr>
+        <th>保單名稱</th><th>每期保費(NTD)</th><th>繳費方式</th><th>繳費年期</th>
+        <th>起保日</th><th>已繳期數</th><th>累計繳費(NTD)</th>
+        <th>帳戶價值(NTD) ▼</th><th>損益</th><th>報酬率</th><th>操作</th>
+      </tr></thead>
+      <tbody id="twdInsBody"><tr><td colspan="11" style="text-align:center;color:var(--muted);padding:22px">尚無資料</td></tr></tbody>
+    </table></div>
   </div>
 
   <!-- 美元儲蓄 -->
-  <div id="ins-usd" style="display:none">
-    <div style="display:flex;gap:10px;margin-bottom:16px">
-      <button class="btn btn-primary" onclick="openInsModal('usd')">＋ 新增美元儲蓄保單</button>
+  <div class="card" style="margin-bottom:18px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="background:#DBEAFE;color:#1E40AF;padding:3px 10px;border-radius:50px;font-size:.75rem;font-weight:700">💵 美元儲蓄</span>
+        <div class="chart-label">美元儲蓄保單</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openInsModal('usd')">＋ 新增</button>
     </div>
-    <div class="card"><div class="chart-label" style="margin-bottom:10px">美元儲蓄保單</div>
-      <div class="table-wrap"><table id="usdInsTable">
-        <thead><tr><th>保單名稱</th><th>保費(USD)</th><th>繳費方式</th><th>繳費年期</th><th>起保日</th><th>已繳期數</th><th>累計繳費(NTD)</th><th>帳戶價值(USD) ▼</th><th>現匯率</th><th>換算NTD</th><th>損益(NTD)</th><th>報酬率</th><th>操作</th></tr></thead>
-        <tbody id="usdInsBody"><tr><td colspan="13" style="text-align:center;color:var(--muted);padding:28px">尚無資料</td></tr></tbody>
-      </table></div>
-    </div>
+    <div class="table-wrap"><table id="usdInsTable">
+      <thead><tr>
+        <th>保單名稱</th><th>保費(USD)</th><th>繳費方式</th><th>繳費年期</th>
+        <th>起保日</th><th>已繳期數</th><th>累計繳費(NTD)</th>
+        <th>帳戶價值(USD) ▼</th><th>現匯率</th><th>換算NTD</th><th>損益(NTD)</th><th>報酬率</th><th>操作</th>
+      </tr></thead>
+      <tbody id="usdInsBody"><tr><td colspan="13" style="text-align:center;color:var(--muted);padding:22px">尚無資料</td></tr></tbody>
+    </table></div>
   </div>
 
   <!-- 投資型-定期定額 -->
-  <div id="ins-inv-dca" style="display:none">
-    <div style="display:flex;gap:10px;margin-bottom:16px">
-      <button class="btn btn-primary" onclick="openInsModal('inv-dca')">＋ 新增</button>
+  <div class="card" style="margin-bottom:18px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="background:#EDE9FE;color:#6D28D9;padding:3px 10px;border-radius:50px;font-size:.75rem;font-weight:700">📈 投資型</span>
+        <div class="chart-label">投資型保單（定期定額）</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openInsModal('inv-dca')">＋ 新增</button>
     </div>
-    <div class="card"><div class="chart-label" style="margin-bottom:10px">投資型保單（定期定額）</div>
-      <div class="table-wrap"><table id="invDcaInsTable">
-        <thead><tr><th>保單名稱</th><th>連結標的</th><th>保費(NTD)</th><th>繳費方式</th><th>起保日</th><th>已繳期數</th><th>累計繳費</th><th>帳戶市值</th><th>損益</th><th>報酬率</th><th>操作</th></tr></thead>
-        <tbody id="invDcaInsBody"><tr><td colspan="11" style="text-align:center;color:var(--muted);padding:28px">尚無資料</td></tr></tbody>
-      </table></div>
-    </div>
+    <div class="table-wrap"><table id="invDcaInsTable">
+      <thead><tr>
+        <th>保單名稱</th><th>連結標的</th><th>保費(NTD)</th><th>繳費方式</th>
+        <th>起保日</th><th>已繳期數</th><th>累計繳費</th><th>帳戶市值</th>
+        <th>損益</th><th>報酬率</th><th>操作</th>
+      </tr></thead>
+      <tbody id="invDcaInsBody"><tr><td colspan="11" style="text-align:center;color:var(--muted);padding:22px">尚無資料</td></tr></tbody>
+    </table></div>
   </div>
 
   <!-- 投資型-單筆月配 -->
-  <div id="ins-inv-lump" style="display:none">
-    <div style="display:flex;gap:10px;margin-bottom:16px">
-      <button class="btn btn-primary" onclick="openInsModal('inv-lump')">＋ 新增</button>
+  <div class="card" style="margin-bottom:4px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="background:#FCE7F3;color:#9D174D;padding:3px 10px;border-radius:50px;font-size:.75rem;font-weight:700">💎 投資型月配</span>
+        <div class="chart-label">投資型保單（單筆月配息）</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openInsModal('inv-lump')">＋ 新增</button>
     </div>
-    <div class="card"><div class="chart-label" style="margin-bottom:10px">投資型保單（單筆月配息）</div>
-      <div class="table-wrap"><table id="invLumpInsTable">
-        <thead><tr><th>保單名稱</th><th>連結標的</th><th>成本(NTD)</th><th>單位數</th><th>買入匯率</th><th>月配/單位(USD)</th><th>本月(USD)</th><th>本月(NTD)</th><th>現值(NTD)</th><th>損益</th><th>報酬率</th><th>操作</th></tr></thead>
-        <tbody id="invLumpInsBody"><tr><td colspan="12" style="text-align:center;color:var(--muted);padding:28px">尚無資料</td></tr></tbody>
-      </table></div>
-    </div>
+    <div class="table-wrap"><table id="invLumpInsTable">
+      <thead><tr>
+        <th>保單名稱</th><th>連結標的</th><th>成本(NTD)</th><th>單位數</th>
+        <th>買入匯率</th><th>月配/單位(USD)</th><th>本月(USD)</th><th>本月(NTD)</th>
+        <th>現值(NTD)</th><th>損益</th><th>報酬率</th><th>操作</th>
+      </tr></thead>
+      <tbody id="invLumpInsBody"><tr><td colspan="12" style="text-align:center;color:var(--muted);padding:22px">尚無資料</td></tr></tbody>
+    </table></div>
   </div>
 </div>
 
@@ -540,8 +560,8 @@ tr:hover td{background:#FDFCFF}
   <div class="section-title">到價提醒</div>
   <div class="section-sub">自動比對標的收盤價，可隨時編輯條件</div>
   <div style="display:flex;gap:10px;margin-bottom:18px">
-    <button class="btn btn-primary" onclick="openModal('addAlertModal')">＋ 新增提醒</button>
-    <button class="btn btn-outline btn-sm" onclick="renderAlerts()">🔄 重新檢查</button>
+    <button class="btn btn-primary" onclick="openAddAlert()">＋ 新增提醒</button>
+    <button class="btn btn-outline btn-sm" onclick="renderAlerts()"> 重新檢查</button>
   </div>
   <div class="grid-2">
     <div class="card"><div class="chart-label" style="margin-bottom:14px">📋 提醒清單</div><div id="alertList"><p style="color:var(--muted);font-size:.85rem">尚無提醒設定</p></div></div>
@@ -831,6 +851,122 @@ tr:hover td{background:#FDFCFF}
   </div>
 </div>
 
+
+<!-- Alert Modal -->
+<div class="modal-overlay" id="addAlertModal">
+  <div class="modal" id="addAlertModal-box">
+    <div class="modal-drag" id="addAlertModal-h"></div>
+    <button class="modal-close" onclick="closeModal('addAlertModal')">✕</button>
+    <div class="modal-title" id="alertModalTitle">新增到價提醒</div>
+    <div class="form-grid">
+      <div class="form-group autocomplete-wrap">
+        <label class="form-label">代號（輸入代號或名稱擇一）</label>
+        <input class="form-input" id="al-code" placeholder="如：2330 / AAPL / 台積電" oninput="acSearch(this,'al-name','al-curr','al-ac')">
+        <div class="ac-list" id="al-ac"></div>
+      </div>
+      <div class="form-group"><label class="form-label">標的名稱（自動帶入）</label><input class="form-input" id="al-name" placeholder="自動帶入"></div>
+      <div class="form-group"><label class="form-label">條件</label>
+        <select class="form-select" id="al-cond">
+          <option value="above">高於 ▲</option>
+          <option value="below">低於 ▼</option>
+          <option value="equal">等於 ≈</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">目標價格</label><input class="form-input" id="al-price" type="number" step="0.01" placeholder="1000"></div>
+      <div class="form-group"><label class="form-label">幣別</label>
+        <select class="form-select" id="al-curr">
+          <option value="TWD">TWD（台股）</option>
+          <option value="USD">USD（美股）</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">備註</label><input class="form-input" id="al-note" placeholder="選填"></div>
+    </div>
+    <input type="hidden" id="al-edit-id">
+    <div style="display:flex;gap:10px;margin-top:18px;justify-content:flex-end">
+      <button class="btn btn-outline" onclick="closeModal('addAlertModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveAlert()">✅ 確認</button>
+    </div>
+  </div>
+</div>
+
+<!-- Goal Modal -->
+<div class="modal-overlay" id="goalModal">
+  <div class="modal" id="goalModal-box">
+    <div class="modal-drag" id="goalModal-h"></div>
+    <button class="modal-close" onclick="closeModal('goalModal')">✕</button>
+    <div class="modal-title">設定期望報酬率目標</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">資產類別</label>
+        <select class="form-select" id="goal-type">
+          <option value="total">總資產</option>
+          <option value="stock">股票</option>
+          <option value="fund">基金</option>
+          <option value="gold">黃金</option>
+          <option value="insurance">保單</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">期望年報酬率 (%)</label><input class="form-input" id="goal-pct" type="number" step="0.1" placeholder="10"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:18px;justify-content:flex-end">
+      <button class="btn btn-outline" onclick="closeModal('goalModal')">取消</button>
+      <button class="btn btn-primary" onclick="addGoal()">✅ 確認</button>
+    </div>
+  </div>
+</div>
+
+<!-- CSV/Image Import Modal -->
+<div class="modal-overlay" id="csvModal">
+  <div class="modal" id="csvModal-box">
+    <div class="modal-drag" id="csvModal-h"></div>
+    <button class="modal-close" onclick="closeModal('csvModal')">✕</button>
+    <div class="modal-title">CSV / 圖片匯入</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <div class="asset-tab active" style="font-size:.78rem" onclick="switchCSVTab(this,'csv-tab')">📄 CSV 貼入</div>
+      <div class="asset-tab" style="font-size:.78rem" onclick="switchCSVTab(this,'img-tab')">🖼️ 圖片辨識</div>
+    </div>
+    <div id="csv-tab">
+      <div class="form-group" style="margin-bottom:10px">
+        <label class="form-label">匯入類型</label>
+        <select class="form-select" id="csv-type-select"><option value="stock">股票</option><option value="gold">黃金</option></select>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-bottom:8px">支援任意欄位順序，自動辨識。可貼上 Excel 複製內容（Tab分隔）或 .csv 文字。</p>
+      <textarea class="csv-area" id="csvText" placeholder="貼上 CSV 內容…&#10;成交日期,股票名稱,交易類別,成交股數,成交價格,手續費&#10;2024/01/15,台積電,買入,1000,700,100" oninput="previewCSV()"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <label class="btn btn-outline btn-sm" style="cursor:pointer">📂 上傳CSV<input type="file" accept=".csv,.txt" style="display:none" onchange="loadCsvFile(this)"></label>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('csvText').value='';document.getElementById('csvPreview').innerHTML=''">清除</button>
+      </div>
+      <div id="csvPreview" style="max-height:150px;overflow-y:auto;margin-top:8px;border-radius:8px;overflow:hidden"></div>
+      <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end">
+        <button class="btn btn-outline" onclick="closeModal('csvModal')">取消</button>
+        <button class="btn btn-primary" onclick="importCSV()">✅ 匯入</button>
+      </div>
+    </div>
+    <div id="img-tab" style="display:none">
+      <div class="form-group" style="margin-bottom:10px">
+        <label class="form-label">辨識類型</label>
+        <select class="form-select" id="img-type-select"><option value="stock">股票</option><option value="gold">黃金</option></select>
+      </div>
+      <div class="img-drop-zone" id="imgDropZone" onclick="document.getElementById('imgFileInput').click()"
+        ondragover="event.preventDefault();this.classList.add('drag-over')"
+        ondragleave="this.classList.remove('drag-over')"
+        ondrop="handleImgDrop(event)">
+        <div style="font-size:2rem;margin-bottom:6px">📷</div>
+        <div style="font-weight:700;color:var(--muted);font-size:.86rem">點擊或拖曳截圖至此</div>
+        <div style="font-size:.73rem;color:var(--muted);margin-top:3px">JPG / PNG / WEBP</div>
+        <input type="file" id="imgFileInput" accept="image/*" style="display:none" onchange="handleImgFile(this)">
+        <img id="imgPreviewEl" style="max-width:100%;max-height:180px;border-radius:10px;margin-top:10px;display:none;object-fit:contain">
+      </div>
+      <div id="imgResult" style="margin-top:10px;font-size:.82rem"></div>
+      <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end">
+        <button class="btn btn-outline" onclick="closeModal('csvModal')">取消</button>
+        <button class="btn btn-primary" id="imgRecognizeBtn" onclick="recognizeImage()" disabled>🤖 AI 辨識</button>
+        <button class="btn btn-primary" id="imgImportBtn" style="display:none;background:linear-gradient(135deg,var(--mint),#00BFA5)" onclick="importImageData()">✅ 匯入結果</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast-container"></div>
 
 <script>
@@ -845,6 +981,7 @@ function initDB(){return{
   twdIns:[],usdIns:[],invDcaIns:[],invLumpIns:[],
   alerts:[],goals:[],
   settings:{sheetUrl:'',autoBackup:'monthly',claudeKey:''},
+  manualPrices:{},
   lastSync:null,usdTwd:32.5
 };}
 function save(){localStorage.setItem(DB_KEY,JSON.stringify(DB));updateSyncLabel();}
@@ -967,16 +1104,35 @@ document.addEventListener('click',e=>{if(!e.target.closest('.autocomplete-wrap')
 const priceCache={};
 async function fetchPrice(sym){
   if(!sym)return null;
-  const c=priceCache[sym];if(c&&Date.now()-c.ts<5*60*1000)return c.price;
+  // Check manual override first
+  if(DB.manualPrices&&DB.manualPrices[sym]!==undefined)return DB.manualPrices[sym];
+  // Smart cache: respect market hours
+  const c=priceCache[sym];
+  const cacheAge=c?Date.now()-c.ts:Infinity;
+  const maxAge=isMarketOpen()?60*60*1000:24*60*60*1000; // 1hr open, 24hr closed
+  if(c&&cacheAge<maxAge)return c.price;
   try{
     const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=5d`;
-    const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,{signal:AbortSignal.timeout(6000)});
+    const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,{signal:AbortSignal.timeout(8000)});
     const d=await r.json();const parsed=JSON.parse(d.contents);
-    const res=parsed.chart?.result?.[0];if(!res)return null;
+    const res=parsed.chart?.result?.[0];if(!res)return c?.price||null;
     const meta=res.meta||{};
-    const price=meta.regularMarketPrice||meta.previousClose||meta.chartPreviousClose||null;
-    if(price){priceCache[sym]={price,ts:Date.now()};return price;}
-  }catch(e){}return null;
+    const closes=res.indicators?.quote?.[0]?.close||[];
+    // Smart price selection:
+    // - If market open: use regularMarketPrice
+    // - If pre-market/after-hours: use previous close
+    // - If market closed: use last available close
+    let price=null;
+    if(meta.regularMarketPrice&&meta.regularMarketPrice>0){
+      price=meta.regularMarketPrice;
+    }else{
+      // Find last non-null close
+      for(let i=closes.length-1;i>=0;i--){if(closes[i]!==null&&closes[i]>0){price=closes[i];break;}}
+    }
+    if(!price)price=meta.previousClose||meta.chartPreviousClose||null;
+    if(price&&price>0){priceCache[sym]={price,ts:Date.now()};return price;}
+    return c?.price||null;
+  }catch(e){return c?.price||null;}
 }
 async function fetchExchangeRate(){
   const p=await fetchPrice('TWD=X');
@@ -1099,6 +1255,13 @@ function addStock(){
   DB.stocks.push(tx);updateHoldings();save();renderStockTables();renderDashboard();
   closeModal('addStockModal');toast('✅ 已新增');
 }
+function openEditHolding(code){
+  // Find most recent buy tx for this holding to edit
+  const txList=DB.stocks.filter(t=>t.code===code);
+  if(!txList.length){toast('找不到交易紀錄','error');return;}
+  // Open the most recent tx
+  openEditStock(txList[txList.length-1].id);
+}
 function openEditStock(id){
   const tx=DB.stocks.find(t=>t.id===id);if(!tx)return;
   document.getElementById('esf-id').value=id;
@@ -1147,12 +1310,17 @@ async function renderStockTables(){
     const sym=h.market==='TW'?h.code+'.TW':h.code;
     const cur=await fetchPrice(sym)||h.costAvg;
     const mktval=cur*h.shares,pnl=mktval-h.totalCost,pct=h.totalCost>0?pnl/h.totalCost*100:0;
+    const symKey=h.market==='TW'?h.code+'.TW':h.code;
+    const isManual=!!(DB.manualPrices&&DB.manualPrices[symKey]!==undefined);
     return`<tr><td><strong>${h.name||h.code}</strong></td><td><span class="cat-stock">${h.code}</span></td>
       <td class="td-num">${fmt(h.shares)}</td><td class="td-num">${fmt(h.costAvg,2)}</td>
-      <td class="td-num">${fmt(cur,2)}</td><td class="td-num">${fmt(mktval,0)}</td>
+      <td class="td-num" style="cursor:pointer" onclick="promptManualPrice('${symKey}','${h.name||h.code}')" title="點擊可手動設定價格">
+        ${fmt(cur,2)}<span style="font-size:.65rem;color:${isManual?'var(--warning)':'var(--muted)'};margin-left:3px">${isManual?'✏手動':'⟳'}</span>
+      </td>
+      <td class="td-num">${fmt(mktval,0)}</td>
       <td class="td-num ${pnl>=0?'td-pos':'td-neg'}">${(pnl>=0?'+':'')+fmt(pnl,0)}</td>
       <td class="td-num ${pct>=0?'td-pos':'td-neg'}">${fmtPct(pct)}</td>
-      <td><button class="btn-edit" onclick="openEditStock(${h.code})">✏️</button>
+      <td><button class="btn-edit" onclick="openEditHolding('${h.code}')">✏️</button>
           <button class="btn-del" onclick="deleteHolding('${h.code}')">🗑️</button></td></tr>`;
   }));
   tbody.innerHTML=rows.join('');renderTxTable();
@@ -1173,6 +1341,16 @@ function renderTxTable(){
 }
 function deleteStockTx(id){if(!confirm('確定刪除？'))return;DB.stocks=DB.stocks.filter(t=>t.id!==id);updateHoldings();save();renderStockTables();renderDashboard();}
 function deleteHolding(code){if(!confirm('刪除 '+code+' 全部紀錄？'))return;DB.stocks=DB.stocks.filter(t=>t.code!==code);updateHoldings();save();renderStockTables();renderDashboard();}
+function promptManualPrice(sym,name){
+  const cur=priceCache[sym]?.price;
+  const manual=DB.manualPrices?.[sym];
+  const val=prompt(`手動設定 ${name}(${sym}) 現價\n（留空 = 清除手動設定，使用自動抓取）\n目前自動報價：${cur?fmt(cur,2):'無'}`, manual||cur||'');
+  if(val===null)return; // cancelled
+  if(!DB.manualPrices)DB.manualPrices={};
+  if(val===''||val==='0'){delete DB.manualPrices[sym];toast('已清除手動設定，恢復自動報價');}
+  else{const n=parseFloat(val.replace(/,/g,''));if(isNaN(n)||n<=0){toast('請輸入有效數字','error');return;}DB.manualPrices[sym]=n;toast(`${name} 現價設為 ${fmt(n,2)}`);}
+  save();renderStockTables();renderDashboard();
+}
 
 // ═══════════════════════════════════════
 //  GOLD (BOT price + integer grams + correct formulas)
@@ -1628,10 +1806,25 @@ const INTL_SRCS=[
 ];
 const PAYWALL_NAMES=['Bloomberg','WSJ','Wall Street Journal','The Economist','Financial Times','FT','New York Times','NYT','Washington Post','The Guardian','CNN'];
 
+const RSS_PROXIES=[
+  url=>`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  url=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+];
 async function fetchRSS(url,maxItems=8){
-  const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,{signal:AbortSignal.timeout(7000)});
-  const d=await r.json();const xml=new DOMParser().parseFromString(d.contents,'text/xml');
-  return Array.from(xml.querySelectorAll('item')).slice(0,maxItems);
+  for(const proxy of RSS_PROXIES){
+    try{
+      const r=await fetch(proxy(url),{signal:AbortSignal.timeout(8000)});
+      if(!r.ok)continue;
+      const text=await r.text();
+      let content=text;
+      // allorigins wraps in JSON
+      try{const j=JSON.parse(text);if(j.contents)content=j.contents;}catch(e){}
+      const xml=new DOMParser().parseFromString(content,'text/xml');
+      const items=Array.from(xml.querySelectorAll('item'));
+      if(items.length>0)return items.slice(0,maxItems);
+    }catch(e){continue;}
+  }
+  return [];
 }
 function parseRSSItem(item,srcName,tag){
   const title=(item.querySelector('title')?.textContent||'').trim();
@@ -1675,7 +1868,7 @@ async function fetchNews(force=false){
   // Google News – holdings + macro
   for(const gq of [
     {q:kws.slice(0,6).join(' OR '),related:true},
-    {q:'戰爭 OR 石油 OR 地緣政治 OR 衝突 OR Fed OR 聯準會 OR 通膨 OR 降息 OR 升息 OR 財報',related:false},
+    {q:'war OR oil OR geopolitical OR Fed OR inflation OR interest rate OR economy OR war OR conflict',related:false},
   ]){
     try{
       const url=`https://news.google.com/rss/search?q=${encodeURIComponent(gq.q)}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant`;
@@ -1918,10 +2111,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   // init draggable modals
   ['addStockModal','editStockModal','addDCAModal','addLumpModal','addGoldModal',
    'insModal','addAlertModal','goalModal','csvModal','addModal','addInsFundModal'
-  ].forEach(id=>{
-    // support both -h and -handle suffix
-    makeDraggable(id);
-  });
+  ].forEach(makeDraggable);
 
   // Ticker + gold price
   setTimeout(buildTicker,400);
