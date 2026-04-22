@@ -152,14 +152,11 @@ tr:hover td{background:#FDFCFF}
 /* Modal — draggable */
 .modal-overlay{position:fixed;inset:0;background:rgba(30,10,60,.4);backdrop-filter:blur(4px);z-index:500;display:none;align-items:flex-start;justify-content:center;padding:40px 20px;pointer-events:none}
 .modal-overlay.open{display:flex;pointer-events:all}
-.modal{background:var(--card);border-radius:var(--radius);padding:28px;max-width:640px;width:calc(100% - 40px);box-shadow:var(--shadow-lg);position:fixed;max-height:88vh;overflow-y:auto;cursor:default;top:60px;z-index:501;left:50%;transform:translateX(-50%)}
-.modal-drag-handle{position:absolute;top:0;left:0;right:0;height:38px;cursor:grab;border-radius:var(--radius) var(--radius) 0 0;background:linear-gradient(135deg,rgba(192,132,252,.08),rgba(244,114,182,.06))}
-.modal-drag-handle:active{cursor:grabbing}
+.modal{background:var(--card);border-radius:var(--radius);max-width:640px;width:calc(100% - 40px);box-shadow:var(--shadow-lg);position:fixed;max-height:90vh;display:flex;flex-direction:column;cursor:default;top:60px;z-index:501;left:50%;transform:translateX(-50%)}
+.modal-drag{flex-shrink:0;height:36px;cursor:grab;border-radius:var(--radius) var(--radius) 0 0;background:linear-gradient(135deg,rgba(192,132,252,.09),rgba(244,114,182,.06));position:relative;z-index:2}
+.modal-body{padding:28px;overflow-y:auto;flex:1;position:relative}
 .modal-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.3rem;color:var(--navy);margin-bottom:16px;margin-top:4px}
-.modal-drag{position:absolute;top:0;left:0;right:0;height:36px;cursor:grab;border-radius:var(--radius) var(--radius) 0 0;background:linear-gradient(135deg,rgba(192,132,252,.07),rgba(244,114,182,.05))}
-.modal-drag::after{content:"· · ·";position:absolute;top:10px;left:50%;transform:translateX(-50%);color:var(--border);font-size:1rem;letter-spacing:4px}
-.modal-drag:active{cursor:grabbing}
-.modal-close{position:absolute;top:12px;right:14px;width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;color:var(--muted);z-index:2}
+.modal-close{position:absolute;top:8px;right:10px;width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;color:var(--muted);z-index:10}
 .modal-close:hover{background:var(--border)}
 
 /* Scrollbar */
@@ -255,7 +252,7 @@ tr:hover td{background:#FDFCFF}
     <button class="nav-tab" data-page="funds" onclick="switchPage('funds',this)"><span>💼</span>基金</button>
     <button class="nav-tab" data-page="gold" onclick="switchPage('gold',this)"><span>🥇</span>黃金</button>
     <button class="nav-tab" data-page="insurance" onclick="switchPage('insurance',this)"><span>🛡️</span>保單</button>
-    <button class="nav-tab" data-page="transactions" onclick="switchPage('transactions',this)"><span>📋</span>交易明細</button>
+    <button class="nav-tab" data-page="transactions" onclick="switchPage('transactions',this);renderAllTx()"><span>📋</span>交易明細</button>
     <button class="nav-tab" data-page="alerts" onclick="switchPage('alerts',this)"><span>🔔</span>到價提醒</button>
     <button class="nav-tab" data-page="news" onclick="switchPage('news',this);if(!allNewsItems.length)tryLoadCache()"><span>📰</span>新聞</button>
     <button class="nav-tab" data-page="settings" onclick="switchPage('settings',this)"><span>⚙️</span>設定</button>
@@ -701,9 +698,10 @@ tr:hover td{background:#FDFCFF}
 <!-- Add Stock -->
 <div class="modal-overlay" id="addStockModal">
   <div class="modal" id="addStockModal-box">
-    <div class="modal-drag" id="addStockModal-h"></div>
-    <div class="modal-drag-handle" id="addStockModal-handle"></div>
-    <button class="modal-close" onclick="closeModal('addStockModal')">✕</button>
+    <div class="modal-drag" id="addStockModal-h">
+      <button class="modal-close" onclick="closeModal('addStockModal')">✕</button></div>
+    <div class="modal-body">
+    
     <div class="modal-title">新增股票持倉</div>
     <div class="form-grid">
       <div class="form-group autocomplete-wrap">
@@ -729,15 +727,17 @@ tr:hover td{background:#FDFCFF}
       <button class="btn btn-outline" onclick="closeModal('addStockModal')">取消</button>
       <button class="btn btn-primary" onclick="addStock()">✅ 確認新增</button>
     </div>
-  </div>
+  
+    </div></div>
 </div>
 
 <!-- Edit Stock -->
 <div class="modal-overlay" id="editStockModal">
   <div class="modal" id="editStockModal-box">
-    <div class="modal-drag" id="editStockModal-h"></div>
-    <div class="modal-drag-handle" id="editStockModal-handle"></div>
-    <button class="modal-close" onclick="closeModal('editStockModal')">✕</button>
+    <div class="modal-drag" id="editStockModal-h">
+      <button class="modal-close" onclick="closeModal('editStockModal')">✕</button></div>
+    <div class="modal-body">
+    
     <div class="modal-title">編輯股票交易</div>
     <div class="form-grid">
       <div class="form-group"><label class="form-label">股票名稱</label><input class="form-input" id="esf-name"></div>
@@ -755,15 +755,17 @@ tr:hover td{background:#FDFCFF}
       <button class="btn btn-outline" onclick="closeModal('editStockModal')">取消</button>
       <button class="btn btn-primary" onclick="saveEditStock()">💾 儲存</button>
     </div>
-  </div>
+  
+    </div></div>
 </div>
 
 <!-- Add DCA -->
 <div class="modal-overlay" id="addDCAModal">
   <div class="modal" id="addDCAModal-box">
-    <div class="modal-drag" id="addDCAModal-h"></div>
-    <div class="modal-drag-handle" id="addDCAModal-handle"></div>
-    <button class="modal-close" onclick="closeModal('addDCAModal')">✕</button>
+    <div class="modal-drag" id="addDCAModal-h">
+      <button class="modal-close" onclick="closeModal('addDCAModal')">✕</button></div>
+    <div class="modal-body">
+    
     <div class="modal-title">新增定期定額基金</div>
     <div class="form-grid">
       <div class="form-group autocomplete-wrap">
@@ -783,15 +785,17 @@ tr:hover td{background:#FDFCFF}
       <button class="btn btn-outline" onclick="closeModal('addDCAModal')">取消</button>
       <button class="btn btn-primary" onclick="addDCA()">✅ 確認新增</button>
     </div>
-  </div>
+  
+    </div></div>
 </div>
 
 <!-- Add Lump Sum -->
 <div class="modal-overlay" id="addLumpModal">
   <div class="modal" id="addLumpModal-box">
-    <div class="modal-drag" id="addLumpModal-h"></div>
-    <div class="modal-drag-handle" id="addLumpModal-handle"></div>
-    <button class="modal-close" onclick="closeModal('addLumpModal')">✕</button>
+    <div class="modal-drag" id="addLumpModal-h">
+      <button class="modal-close" onclick="closeModal('addLumpModal')">✕</button></div>
+    <div class="modal-body">
+    
     <div class="modal-title">新增單筆月配息基金</div>
     <div class="form-grid">
       <div class="form-group autocomplete-wrap">
@@ -811,14 +815,17 @@ tr:hover td{background:#FDFCFF}
       <button class="btn btn-outline" onclick="closeModal('addLumpModal')">取消</button>
       <button class="btn btn-primary" onclick="addLump()">✅ 確認新增</button>
     </div>
-  </div>
+  
+    </div></div>
 </div>
 
 <!-- Add Gold -->
 <div class="modal-overlay" id="addGoldModal">
   <div class="modal" id="addGoldModal-box">
-    <div class="modal-drag" id="addGoldModal-h"></div>
-    <button class="modal-close" onclick="closeModal('addGoldModal')">✕</button>
+    <div class="modal-drag" id="addGoldModal-h">
+      <button class="modal-close" onclick="closeModal('addGoldModal')">✕</button></div>
+    <div class="modal-body">
+    
     <div class="modal-title" id="goldModalTitle">新增黃金存摺交易</div>
     <div class="form-grid">
       <div class="form-group"><label class="form-label">交易時間</label><input class="form-input date-smart" id="g-date" placeholder="20240101 或 2024/01/01" oninput="smartDate(this)"></div>
@@ -831,14 +838,17 @@ tr:hover td{background:#FDFCFF}
       <button class="btn btn-outline" onclick="closeModal('addGoldModal')">取消</button>
       <button class="btn btn-primary" id="goldModalBtn" onclick="saveGold()">✅ 確認新增</button>
     </div>
-  </div>
+  
+    </div></div>
 </div>
 
 <!-- Insurance Modal (unified, dynamic form) -->
 <div class="modal-overlay" id="insModal">
   <div class="modal" id="insModal-box">
-    <div class="modal-drag" id="insModal-h"></div>
-    <button class="modal-close" onclick="closeModal('insModal')">✕</button>
+    <div class="modal-drag" id="insModal-h">
+      <button class="modal-close" onclick="closeModal('insModal')">✕</button></div>
+    <div class="modal-body">
+    
     <div class="modal-title" id="insModalTitle">新增保單</div>
     <div id="insFormContainer"></div>
     <input type="hidden" id="ins-edit-id">
@@ -847,15 +857,17 @@ tr:hover td{background:#FDFCFF}
       <button class="btn btn-outline" onclick="closeModal('insModal')">取消</button>
       <button class="btn btn-primary" onclick="saveInsurance()">✅ 確認</button>
     </div>
-  </div>
+  
+    </div></div>
 </div>
 
 <!-- Add generic -->
 <div class="modal-overlay" id="addModal">
   <div class="modal" id="addModal-box" data-drag="true" style="max-width:480px">
-    <div class="modal-drag" id="addModal-h"></div>
-    <div class="modal-drag-handle" id="addModal-handle"></div>
-    <button class="modal-close" onclick="closeModal('addModal')">✕</button>
+    <div class="modal-drag" id="addModal-h">
+      <button class="modal-close" onclick="closeModal('addModal')">✕</button></div>
+    <div class="modal-body">
+    
     <div class="modal-title">新增交易</div>
     <p style="font-size:.88rem;color:var(--muted);margin-bottom:16px">選擇交易類型：</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -866,15 +878,17 @@ tr:hover td{background:#FDFCFF}
       <button class="btn btn-outline" onclick="closeModal('addModal');switchPage('insurance',document.querySelector('[data-page=insurance]'));openModal('addUsdInsModal')">🛡️ 美元保單</button>
       <button class="btn btn-outline" onclick="closeModal('addModal');switchPage('insurance',document.querySelector('[data-page=insurance]'));openModal('addInvInsModal')">📋 投資型保單</button>
     </div>
-  </div>
+  
+    </div></div>
 </div>
 
 <!-- InsuranceFund Modal -->
 <div class="modal-overlay" id="addInsFundModal">
   <div class="modal" id="addInsFundModal-box">
-    <div class="modal-drag" id="addInsFundModal-h"></div>
-    <div class="modal-drag-handle" id="addInsFundModal-handle"></div>
-    <button class="modal-close" onclick="closeModal('addInsFundModal')">✕</button>
+    <div class="modal-drag" id="addInsFundModal-h">
+      <button class="modal-close" onclick="closeModal('addInsFundModal')">✕</button></div>
+    <div class="modal-body">
+    
     <div class="modal-title">新增投資型保單連結標的</div>
     <div class="form-grid">
       <div class="form-group"><label class="form-label">保單名稱</label><input class="form-input" id="if-name"></div>
@@ -891,15 +905,18 @@ tr:hover td{background:#FDFCFF}
       <button class="btn btn-outline" onclick="closeModal('addInsFundModal')">取消</button>
       <button class="btn btn-primary" onclick="addInsFund()">✅ 確認</button>
     </div>
-  </div>
+  
+    </div></div>
 </div>
 
 
 <!-- Alert Modal -->
 <div class="modal-overlay" id="addAlertModal">
   <div class="modal" id="addAlertModal-box">
-    <div class="modal-drag" id="addAlertModal-h"></div>
-    <button class="modal-close" onclick="closeModal('addAlertModal')">✕</button>
+    <div class="modal-drag" id="addAlertModal-h">
+      <button class="modal-close" onclick="closeModal('addAlertModal')">✕</button></div>
+    <div class="modal-body">
+    
     <div class="modal-title" id="alertModalTitle">新增到價提醒</div>
     <div class="form-grid">
       <div class="form-group autocomplete-wrap">
@@ -929,14 +946,17 @@ tr:hover td{background:#FDFCFF}
       <button class="btn btn-outline" onclick="closeModal('addAlertModal')">取消</button>
       <button class="btn btn-primary" onclick="saveAlert()">✅ 確認</button>
     </div>
-  </div>
+  
+    </div></div>
 </div>
 
 <!-- Goal Modal -->
 <div class="modal-overlay" id="goalModal">
   <div class="modal" id="goalModal-box">
-    <div class="modal-drag" id="goalModal-h"></div>
-    <button class="modal-close" onclick="closeModal('goalModal')">✕</button>
+    <div class="modal-drag" id="goalModal-h">
+      <button class="modal-close" onclick="closeModal('goalModal')">✕</button></div>
+    <div class="modal-body">
+    
     <div class="modal-title">設定期望報酬率目標</div>
     <div class="form-grid">
       <div class="form-group">
@@ -955,14 +975,17 @@ tr:hover td{background:#FDFCFF}
       <button class="btn btn-outline" onclick="closeModal('goalModal')">取消</button>
       <button class="btn btn-primary" onclick="addGoal()">✅ 確認</button>
     </div>
-  </div>
+  
+    </div></div>
 </div>
 
 <!-- CSV/Image Import Modal -->
 <div class="modal-overlay" id="csvModal">
   <div class="modal" id="csvModal-box">
-    <div class="modal-drag" id="csvModal-h"></div>
-    <button class="modal-close" onclick="closeModal('csvModal')">✕</button>
+    <div class="modal-drag" id="csvModal-h">
+      <button class="modal-close" onclick="closeModal('csvModal')">✕</button></div>
+    <div class="modal-body">
+    
     <div class="modal-title">CSV / 圖片匯入</div>
     <div style="display:flex;gap:8px;margin-bottom:14px">
       <div class="asset-tab active" style="font-size:.78rem" onclick="switchCSVTab(this,'csv-tab')">📄 CSV 貼入</div>
@@ -1007,7 +1030,8 @@ tr:hover td{background:#FDFCFF}
         <button class="btn btn-primary" id="imgImportBtn" style="display:none;background:linear-gradient(135deg,var(--mint),#00BFA5)" onclick="importImageData()">✅ 匯入結果</button>
       </div>
     </div>
-  </div>
+  
+    </div></div>
 </div>
 
 <div id="toast-container"></div>
@@ -1700,9 +1724,33 @@ function saveInsurance(){
 }
 function renderInsuranceTables(){renderTwdInsTable();renderUsdInsTable();renderInvDcaInsTable();renderInvLumpInsTable();}
 function calcPaid(ins){
-  const s=ins.start?new Date(ins.start):new Date();
-  const mo=Math.max(0,Math.floor((new Date()-s)/2592000000));
-  return{periods:Math.ceil(mo/(12/(ins.freq||12))),paid:Math.ceil(mo/(12/(ins.freq||12)))*(ins.premium||0)};
+  const start=ins.start?new Date(ins.start):null;
+  if(!start||isNaN(start))return{periods:0,paid:0};
+  const now=new Date();
+  const freq=ins.freq||12; // 12=年繳,6=半年繳,3=季繳,1=月繳
+  let periods=0;
+  if(freq===12){
+    // 年繳: 已繳幾年 = floor years elapsed
+    periods=Math.floor((now-start)/(365.25*24*3600*1000));
+  }else if(freq===6){
+    // 半年繳
+    const months=Math.floor((now-start)/(30.44*24*3600*1000));
+    periods=Math.floor(months/6);
+  }else if(freq===3){
+    // 季繳
+    const months=Math.floor((now-start)/(30.44*24*3600*1000));
+    periods=Math.floor(months/3);
+  }else{
+    // 月繳
+    periods=Math.floor((now-start)/(30.44*24*3600*1000));
+  }
+  periods=Math.max(0,periods);
+  // If term is set, cap at total periods
+  if(ins.term&&ins.term>0){
+    const maxPeriods=ins.term*(12/freq);
+    periods=Math.min(periods,maxPeriods);
+  }
+  return{periods,paid:periods*(ins.premium||0)};
 }
 const FREQ_LABEL={12:'年繳',6:'半年繳',3:'季繳',1:'月繳'};
 function renderTwdInsTable(){
@@ -2225,7 +2273,104 @@ function clearAllData(){if(!confirm('確定清除所有資料？'))return;DB=ini
 function dl(fn,du){const a=document.createElement('a');a.href=du;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);}
 
 // ── Render all ──────────────────────────────────────────────────────────────
-function renderAll(){renderDashboard();renderStockTables();renderGoldTable();renderDCATable();renderLumpTable();renderInsFundTable();renderInsuranceTables();renderAlerts();renderGoals();}
+// ── Render All Transactions ──────────────────────────────────────────────────
+function renderAllTx(){
+  const tbody=document.getElementById('allTxBody');
+  if(!tbody)return;
+  const rows=[];
+
+  // Stocks
+  DB.stocks.forEach(tx=>{
+    rows.push({
+      date:tx.date||'',type:'股票',name:tx.name||tx.code||'──',
+      action:tx.type,amount:tx.amount||tx.shares*tx.price||0,
+      pnl:tx.type==='賣出'?(tx.amount-(tx.shares*(DB.holdings[tx.code]?.costAvg||tx.price))):null,
+      pct:null,note:tx.note||''
+    });
+  });
+
+  // Gold
+  let gStock=0,gCost=0;
+  DB.goldTx.forEach(tx=>{
+    let pnl=null;
+    if(tx.type==='賣出'){const avg=gStock>0?gCost/gStock:0;pnl=tx.grams*(tx.price-avg);}
+    if(tx.type==='買入'){gStock+=tx.grams;gCost+=tx.amount;}
+    else{const avg=gStock>0?gCost/gStock:0;gCost-=avg*tx.grams;gStock-=tx.grams;}
+    rows.push({date:tx.date||'',type:'黃金',name:'黃金存摺',
+      action:tx.type,amount:tx.amount||0,pnl,pct:null,note:''});
+  });
+
+  // DCA Funds
+  DB.dcaFunds.forEach(f=>{
+    rows.push({date:f.start||'',type:'基金',name:f.name||'──',
+      action:'定期定額',amount:f.units*f.cost||0,pnl:null,pct:null,note:`每月${f.day}號 ${fmt(f.amount,0)}元`});
+  });
+
+  // Lump Funds
+  DB.lumpFunds.forEach(f=>{
+    rows.push({date:f.date||'',type:'基金',name:f.name||'──',
+      action:'單筆月配',amount:f.cost||0,pnl:null,pct:null,note:`月配 ${fmt(f.divpm,4)} USD/單位`});
+  });
+
+  // Insurance - TWD
+  DB.twdIns.forEach(ins=>{
+    const{paid}=calcPaid(ins);
+    rows.push({date:ins.start||'',type:'保單',name:ins.name||'──',
+      action:'台幣儲蓄',amount:paid,pnl:(ins.value||0)-paid,pct:paid>0?((ins.value||0)-paid)/paid*100:null,note:''});
+  });
+
+  // Insurance - USD
+  DB.usdIns.forEach(ins=>{
+    const{paid}=calcPaid(ins);const paidNTD=paid*(ins.rate||DB.usdTwd);const curNTD=(ins.value||0)*DB.usdTwd;
+    rows.push({date:ins.start||'',type:'保單',name:ins.name||'──',
+      action:'美元儲蓄',amount:paidNTD,pnl:curNTD-paidNTD,pct:paidNTD>0?(curNTD-paidNTD)/paidNTD*100:null,note:''});
+  });
+
+  // Insurance - Inv DCA
+  DB.invDcaIns.forEach(ins=>{
+    const{paid}=calcPaid(ins);
+    rows.push({date:ins.start||'',type:'保單',name:ins.name||'──',
+      action:'投資型定額',amount:paid,pnl:null,pct:null,note:ins.cname||ins.code||''});
+  });
+
+  // Insurance - Inv Lump
+  DB.invLumpIns.forEach(ins=>{
+    rows.push({date:ins.start||'',type:'保單',name:ins.name||'──',
+      action:'投資型月配',amount:ins.premium||0,pnl:null,pct:null,note:ins.cname||ins.code||''});
+  });
+
+  // Sort by date descending
+  rows.sort((a,b)=>b.date.localeCompare(a.date));
+
+  if(!rows.length){
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:28px">尚無交易紀錄</td></tr>';
+    return;
+  }
+
+  const TYPE_BADGE={
+    '股票':'<span class="cat-stock">股票</span>',
+    '基金':'<span class="cat-fund">基金</span>',
+    '黃金':'<span class="cat-gold">黃金</span>',
+    '保單':'<span class="cat-ins">保單</span>',
+  };
+
+  tbody.innerHTML=rows.map(r=>{
+    const pnlStr=r.pnl!=null?`<span class="${r.pnl>=0?'td-pos':'td-neg'}">${(r.pnl>=0?'+':'')+fmt(r.pnl,0)}</span>`:'──';
+    const pctStr=r.pct!=null?`<span class="${r.pct>=0?'td-pos':'td-neg'}">${fmtPct(r.pct)}</span>`:'──';
+    return`<tr>
+      <td style="white-space:nowrap">${r.date}</td>
+      <td>${TYPE_BADGE[r.type]||r.type}</td>
+      <td><strong>${r.name}</strong></td>
+      <td>${r.action}</td>
+      <td class="td-num">${fmt(r.amount,0)}</td>
+      <td class="td-num">${pnlStr}</td>
+      <td class="td-num">${pctStr}</td>
+      <td style="font-size:.75rem;color:var(--muted)">${r.note}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAll(){renderDashboard();renderStockTables();renderGoldTable();renderDCATable();renderLumpTable();renderInsFundTable();renderInsuranceTables();renderAlerts();renderGoals();renderAllTx();}
 
 // ── INIT ────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
